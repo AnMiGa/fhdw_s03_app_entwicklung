@@ -21,6 +21,14 @@ public class MainFragment extends Fragment {
             new LaunchSpeechRecognition(),
             query -> {
 
+                getTextView().setText(query + "\n");
+                MainActivity.backgroundExecutorService.execute(() ->
+                {
+                    ChatGpt chatGpt = new ChatGpt("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");
+                    String answer = chatGpt.getChatCompletion(query);
+                    getTextView().append(answer + "\n");
+                    getTextView().append("---------------------------------------");
+                });
             });
 
     public MainFragment() {
@@ -36,12 +44,10 @@ public class MainFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        getAskButton().setOnClickListener(v -> MainActivity.backgroundExecutorService.execute(() ->
-        {
-            ChatGpt chatGpt = new ChatGpt("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");
-            String answer = chatGpt.getChatCompletion("What's the answer to the universe and everything?");
-            getTextView().setText(answer);
-        }));
+        getAskButton().setOnClickListener(v -> {
+            getTextFromSpeech.launch(new LaunchSpeechRecognition.SpeechRecognitionArgs());
+
+        });
     }
 
     private TextView getTextView() {
